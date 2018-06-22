@@ -115,13 +115,13 @@ function actions(basePath, options={})
       }
     },
 
-    read(id)
+    read(id, ownId=undefined)
     {
       return {
         type: actionTypes.read,
         meta:
         {
-          id,
+          id: ownId || id,
           offline:
           {
             effect: {
@@ -129,21 +129,21 @@ function actions(basePath, options={})
               method: 'GET',
               headers
             },
-            commit: {type: actionTypes.read_commit, meta: {id}},
-            rollback: {type: actionTypes.read_rollback, meta: {id}}
+            commit: {type: actionTypes.read_commit, meta: {id: ownId || id}},
+            rollback: {type: actionTypes.read_rollback, meta: {id: ownId || id}}
           }
         }
       }
     },
 
-    update(id, body)
+    update(id, body, ownId=undefined)
     {
       return {
         type: actionTypes.update,
         payload: body,
         meta:
         {
-          id,
+          id: ownId || id,
           offline:
           {
             effect:
@@ -153,8 +153,8 @@ function actions(basePath, options={})
               body,
               headers
             },
-            commit: {type: actionTypes.update_commit, meta: {id}},
-            rollback: {type: actionTypes.update_rollback, meta: {id}}
+            commit: {type: actionTypes.update_commit, meta: {id: ownId || id}},
+            rollback: {type: actionTypes.update_rollback, meta: {id: ownId || id}}
           }
         }
       }
