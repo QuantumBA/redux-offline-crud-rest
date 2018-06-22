@@ -1,6 +1,6 @@
 {
   "name": "@foqum/redux-offline-crud-rest",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Offline-first persistence for React Native web apps backed by CRUD-based operations over REST APIs",
   "main": "index.js",
   "scripts": {
