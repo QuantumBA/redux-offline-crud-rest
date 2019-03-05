@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/QuantumBA/redux-offline-crud-rest?branch=master)](https://travis-ci.org/QuantumBA/redux-offline-crud-rest)
+[![Coverage Status](https://coveralls.io/repos/github/QuantumBA/redux-offline-crud-rest/badge.svg?branch=master)](https://coveralls.io/github/QuantumBA/redux-offline-crud-rest?branch=master)
+
 # redux-offline-crud-rest
 Offline-first persistence for React Native web apps backed by CRUD-based
 operations over REST APIs
