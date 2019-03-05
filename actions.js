@@ -2,13 +2,9 @@ const uuid = require('react-native-uuid')
 
 const genActionTypes = require('./actionTypes')
 
-
+// Join params with slashses
 function composeUrl(...args) {
-  return args.filter(filterComposeUrl).join('/')
-}
-
-function filterComposeUrl(item) {
-  return item != null
+  return args.filter(item => item != null).join('/')
 }
 
 function filterMethods([name, func]) {
@@ -33,22 +29,27 @@ function reduceNamespacesObject(acum, [name, options]) {
   return reduceNamespaces.call({ ...this, ...options }, acum, name)
 }
 
+const removeLastChar = string => string.slice(0, -1)
+const removeFirstChar = string => string.slice(1)
 
 function actions(basePath, options = {}) {
   if (Array.isArray(basePath)) {
+    // basePath is an array, recursion
     return basePath.reduce(reduceNamespaces.bind(options), {})
   }
 
   if (typeof basePath !== 'string') {
+    // basePath is an dictionary like object, recursion
     return Object.entries(basePath).reduce(reduceNamespacesObject.bind(options), {})
   }
 
-  if (basePath.endsWith('/')) basePath = basePath.slice(0, basePath.length - 1)
+  // basePath is a string
+  if (basePath.endsWith('/')) basePath = removeLastChar(basePath)
 
   const { dispatch, headers } = options
 
   let baseUrl = options.baseUrl || ''
-  if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, baseUrl.length - 1)
+  if (baseUrl.endsWith('/')) baseUrl = removeLastChar(baseUrl)
 
   const actionTypes = genActionTypes(basePath)
 
@@ -77,9 +78,11 @@ function actions(basePath, options = {}) {
     } }
   }
 
+  // create object with CREATE, GET, PUT, PATCH, DELETE
   let result = {
-    create(body) {
+    create(body, suffix) {
       const id = `tmp_id:${uuid.v4()}`
+      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
 
       return {
         type: actionTypes.create,
@@ -88,7 +91,7 @@ function actions(basePath, options = {}) {
           id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath),
+              url: composeUrl(baseUrl, basePath, suffix),
               method: 'POST',
               body,
               headers,
@@ -100,14 +103,15 @@ function actions(basePath, options = {}) {
       }
     },
 
-    read(id, ownId = undefined) {
+    read(id, ownId = undefined, suffix) {
+      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
       return {
         type: actionTypes.read,
         meta: {
           id: ownId || id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, id),
+              url: composeUrl(baseUrl, basePath, id, suffix),
               method: 'GET',
               headers,
             },
@@ -118,7 +122,9 @@ function actions(basePath, options = {}) {
       }
     },
 
-    update(id, body, ownId = undefined) {
+    update(id, body, ownId = undefined, suffix) {
+      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
+
       return {
         type: actionTypes.update,
         payload: body,
@@ -126,7 +132,7 @@ function actions(basePath, options = {}) {
           id: ownId || id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, id),
+              url: composeUrl(baseUrl, basePath, id, suffix),
               method: 'PUT',
               body,
               headers,
@@ -138,7 +144,9 @@ function actions(basePath, options = {}) {
       }
     },
 
-    patch(id, body) {
+    patch(id, body, suffix) {
+      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
+
       return {
         type: actionTypes.patch,
         payload: body,
@@ -146,7 +154,7 @@ function actions(basePath, options = {}) {
           id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, id),
+              url: composeUrl(baseUrl, basePath, id, suffix),
               method: 'PATCH',
               body,
               headers: { ...headers, 'content-type': 'merge-patch+json' },
@@ -158,14 +166,16 @@ function actions(basePath, options = {}) {
       }
     },
 
-    delete(id) {
+    delete(id, suffix) {
+      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
+
       return {
         type: actionTypes.delete,
         meta: {
           id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, id),
+              url: composeUrl(baseUrl, basePath, id, suffix),
               method: 'DELETE',
               headers,
             },
@@ -177,12 +187,14 @@ function actions(basePath, options = {}) {
     },
   }
 
+  // custom methods
   let { resourceMethods } = options
   if (!resourceMethods) {
     resourceMethods = Object.entries(options).filter(filterMethods)
       .reduce(reduceFilteredMethods, {})
   }
 
+  // merge CRUD methods with custom ones
   result = Object.entries(resourceMethods).reduce(reduceMethods, result)
 
   if (!dispatch) return result

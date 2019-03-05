@@ -1,10 +1,8 @@
 const actions = require('../actions')
 
 
-describe('basic', function()
-{
-  test('basic', function()
-  {
+describe('basic', () => {
+  test('basic', () => {
     const create = require('./fixtures/create.json')
     const read = require('./fixtures/read.json')
     const update = require('./fixtures/update.json')
@@ -18,8 +16,7 @@ describe('basic', function()
     expect(result.delete()).toMatchObject(del)
   })
 
-  test('patch', function()
-  {
+  test('patch', () => {
     const result = actions('path').patch()
 
     expect(result).toMatchObject(require('./fixtures/patch.json'))
@@ -27,25 +24,20 @@ describe('basic', function()
   })
 })
 
-test('dispatch', function()
-{
+test('dispatch', () => {
   const create = require('./fixtures/create.json')
 
-  actions('path', {dispatch(action)
-  {
+  actions('path', { dispatch(action) {
     expect(action).toMatchObject(create)
-  }}).create()
+  } }).create()
 })
 
-describe('resource methods', function()
-{
-  test('implicit', function()
-  {
+describe('resource methods', () => {
+  test('implicit', () => {
     const foo = require('./fixtures/foo.json')
 
-    const options =
-    {
-      foo(){}
+    const options = {
+      foo() { },
     }
 
     const result = actions('path', options)
@@ -53,16 +45,13 @@ describe('resource methods', function()
     expect(result.foo()).toMatchObject(foo)
   })
 
-  test('explicit', function()
-  {
+  test('explicit', () => {
     const foo = require('./fixtures/foo.json')
 
-    const options =
-    {
-      resourceMethods:
-      {
-        foo(){}
-      }
+    const options = {
+      resourceMethods: {
+        foo() {},
+      },
     }
 
     const result = actions('path', options)
@@ -71,46 +60,49 @@ describe('resource methods', function()
   })
 })
 
-describe('namespaces', function()
-{
-  test('array', function()
-  {
+describe('namespaces', () => {
+  test('array', () => {
     const result = actions(['bar', 'foo'])
 
     expect(result.bar.create).toBeInstanceOf(Function)
-    expect(result.bar.read  ).toBeInstanceOf(Function)
+    expect(result.bar.read).toBeInstanceOf(Function)
     expect(result.bar.update).toBeInstanceOf(Function)
-    expect(result.bar.patch ).toBeInstanceOf(Function)
+    expect(result.bar.patch).toBeInstanceOf(Function)
     expect(result.bar.delete).toBeInstanceOf(Function)
 
     expect(result.foo.create).toBeInstanceOf(Function)
-    expect(result.foo.read  ).toBeInstanceOf(Function)
+    expect(result.foo.read).toBeInstanceOf(Function)
     expect(result.foo.update).toBeInstanceOf(Function)
-    expect(result.foo.patch ).toBeInstanceOf(Function)
+    expect(result.foo.patch).toBeInstanceOf(Function)
     expect(result.foo.delete).toBeInstanceOf(Function)
   })
 
-  test('object', function()
-  {
-    const result = actions({bar: true, foo: {}})
+  test('object', () => {
+    const result = actions({ bar: true, foo: {} })
 
     expect(result.bar.create).toBeInstanceOf(Function)
-    expect(result.bar.read  ).toBeInstanceOf(Function)
+    expect(result.bar.read).toBeInstanceOf(Function)
     expect(result.bar.update).toBeInstanceOf(Function)
-    expect(result.bar.patch ).toBeInstanceOf(Function)
+    expect(result.bar.patch).toBeInstanceOf(Function)
     expect(result.bar.delete).toBeInstanceOf(Function)
 
     expect(result.foo.create).toBeInstanceOf(Function)
-    expect(result.foo.read  ).toBeInstanceOf(Function)
+    expect(result.foo.read).toBeInstanceOf(Function)
     expect(result.foo.update).toBeInstanceOf(Function)
-    expect(result.foo.patch ).toBeInstanceOf(Function)
+    expect(result.foo.patch).toBeInstanceOf(Function)
     expect(result.foo.delete).toBeInstanceOf(Function)
   })
 })
 
-test('url endings', function()
-{
-  const result = actions('path/', {baseUrl: 'http://example/'})
+test('url endings', () => {
+  const result = actions('path/', { baseUrl: 'http://example/' })
 
   expect(result.create().meta.offline.effect.url).toBe('http://example/path')
+
+  const resultSufix = actions('path/', { baseUrl: 'http://example/' })
+  expect(resultSufix.create({}, '/sufix').meta.offline.effect.url).toBe('http://example/path/sufix')
+  expect(resultSufix.read('id', null, '/sufix').meta.offline.effect.url).toBe('http://example/path/id/sufix')
+  expect(resultSufix.patch('id', {}, '/sufix').meta.offline.effect.url).toBe('http://example/path/id/sufix')
+  expect(resultSufix.update('id', {}, null, '/sufix').meta.offline.effect.url).toBe('http://example/path/id/sufix')
+  expect(resultSufix.delete('id', '/sufix/id2').meta.offline.effect.url).toBe('http://example/path/id/sufix/id2')
 })

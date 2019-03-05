@@ -11,7 +11,8 @@
         }
     },
     "env": {
-        "browser": true
+        "browser": true,
+        "jest": true
     },
     "rules": {
         "operator-linebreak": 0,
@@ -40,5 +41,6 @@
         "no-use-before-define": ["error", { "functions": false }],
         "object-curly-newline": ["error", { "consistent": true }],
         "no-nested-ternary": 0,
-    }
+    },
+    "plugins": ["jest"]
 }
