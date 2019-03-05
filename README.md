@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/QuantumBA/redux-offline-crud-rest?branch=master)](https://travis-ci.org/QuantumBA/redux-offline-crud-rest)
+[![Build Status](https://travis-ci.org/QuantumBA/redux-offline-crud-rest.svg?branch=master)](https://travis-ci.org/QuantumBA/redux-offline-crud-rest)
 [![Coverage Status](https://coveralls.io/repos/github/QuantumBA/redux-offline-crud-rest/badge.svg?branch=master)](https://coveralls.io/github/QuantumBA/redux-offline-crud-rest?branch=master)
 
 # redux-offline-crud-rest
@@ -40,11 +40,11 @@ npm install redux-offline-crud-rest
 `actions()` function will return an namespace object with a function for each
 one of the possible CRUD operations:
 
-* `create(body)`
-* `read(id)`
-* `update(id, body)`
-* `patch(id, body)`
-* `delete(id)`
+* `create(body, urlSuffix)`
+* `read(id, ownId, urlSuffix)`
+* `update(id, body, ownId, urlSuffix)`
+* `patch(id, body, urlSuffix)`
+* `delete(id, urlSuffix)`
 
 In all cases, `id` will be unique ID to identify a resource under the specified
 collection, and `body` will be a JSON object with the actual data to be stored
