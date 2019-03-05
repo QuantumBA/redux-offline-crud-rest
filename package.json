@@ -4,7 +4,8 @@
   "description": "Offline-first persistence for React Native web apps backed by CRUD-based operations over REST APIs",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage --notify"
+    "test": "jest --coverage --notify",
+    "modules": "rm -rf node_modules && npm install"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,12 @@
     "react-native-uuid": "^1.4.9"
   },
   "devDependencies": {
-    "jest": "^21.2.1"
+    "babel-eslint": "^8.2.1",
+    "eslint": "^4.18.0",
+    "eslint-plugin-react": "^7.6.1",
+    "jest": "^21.2.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3"
   }
 }
