@@ -30,7 +30,12 @@ function reduceNamespacesObject(acum, [name, options]) {
 }
 
 const removeLastChar = string => string.slice(0, -1)
-const removeFirstChar = string => string.slice(1)
+
+function trim(string, char) {
+  return string.replace(new RegExp(
+    '^[' + char + ']+|[' + char + ']+$', 'g' // eslint-disable-line
+  ), '')
+}
 
 function actions(basePath, options = {}) {
   if (Array.isArray(basePath)) {
@@ -80,9 +85,9 @@ function actions(basePath, options = {}) {
 
   // create object with CREATE, GET, PUT, PATCH, DELETE
   let result = {
-    create(body, suffix) {
+    create(body, prefix) {
       const id = `tmp_id:${uuid.v4()}`
-      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
+      if (prefix) prefix = trim(prefix, '/')
 
       return {
         type: actionTypes.create,
@@ -91,7 +96,7 @@ function actions(basePath, options = {}) {
           id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, suffix),
+              url: composeUrl(baseUrl, prefix, basePath),
               method: 'POST',
               body,
               headers,
@@ -103,15 +108,15 @@ function actions(basePath, options = {}) {
       }
     },
 
-    read(id, ownId = undefined, suffix) {
-      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
+    read(id, ownId = undefined, prefix) {
+      if (prefix) prefix = trim(prefix, '/')
       return {
         type: actionTypes.read,
         meta: {
           id: ownId || id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, id, suffix),
+              url: composeUrl(baseUrl, prefix, basePath, id),
               method: 'GET',
               headers,
             },
@@ -122,8 +127,8 @@ function actions(basePath, options = {}) {
       }
     },
 
-    update(id, body, ownId = undefined, suffix) {
-      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
+    update(id, body, ownId = undefined, prefix) {
+      if (prefix) prefix = trim(prefix, '/')
 
       return {
         type: actionTypes.update,
@@ -132,7 +137,7 @@ function actions(basePath, options = {}) {
           id: ownId || id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, id, suffix),
+              url: composeUrl(baseUrl, prefix, basePath, id),
               method: 'PUT',
               body,
               headers,
@@ -144,8 +149,8 @@ function actions(basePath, options = {}) {
       }
     },
 
-    patch(id, body, suffix) {
-      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
+    patch(id, body, prefix) {
+      if (prefix) prefix = trim(prefix, '/')
 
       return {
         type: actionTypes.patch,
@@ -154,7 +159,7 @@ function actions(basePath, options = {}) {
           id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, id, suffix),
+              url: composeUrl(baseUrl, prefix, basePath, id),
               method: 'PATCH',
               body,
               headers: { ...headers, 'content-type': 'merge-patch+json' },
@@ -166,8 +171,8 @@ function actions(basePath, options = {}) {
       }
     },
 
-    delete(id, suffix) {
-      if (suffix && suffix.startsWith('/')) suffix = removeFirstChar(suffix)
+    delete(id, prefix) {
+      if (prefix) prefix = trim(prefix, '/')
 
       return {
         type: actionTypes.delete,
@@ -175,7 +180,7 @@ function actions(basePath, options = {}) {
           id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, basePath, id, suffix),
+              url: composeUrl(baseUrl, prefix, basePath, id),
               method: 'DELETE',
               headers,
             },
