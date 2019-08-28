@@ -4,7 +4,17 @@ const genActionTypes = require('./actionTypes')
 
 // Join params with slashses
 function composeUrl(...args) {
-  return args.filter(item => item != null).join('/')
+  let queryParams = ''
+  const url = args.filter((item) => {
+    if (item != null) {
+      if(!item.startsWith('?')) {
+        return item
+      } else {
+        queryParams = item
+      }
+    }
+  }).join('/')
+  return url.concat(queryParams)
 }
 
 function filterMethods([name, func]) {
@@ -108,7 +118,13 @@ function actions(basePath, options = {}) {
       }
     },
 
-    read(id, ownId = undefined, prefix) {
+    read(id, ownId = undefined, prefix, skip) {
+      console.log('baseUrl', baseUrl)
+      console.log('basePath', basePath)
+      console.log('prefix', prefix)
+      console.log('skip', skip)
+      console.log('id', id)
+      console.log('ownId', ownId)
       if (prefix) prefix = trim(prefix, '/')
       return {
         type: actionTypes.read,
@@ -116,7 +132,7 @@ function actions(basePath, options = {}) {
           id: ownId || id,
           offline: {
             effect: {
-              url: composeUrl(baseUrl, prefix, basePath, id),
+              url: composeUrl(baseUrl, prefix, basePath, id, skip),
               method: 'GET',
               headers,
             },
