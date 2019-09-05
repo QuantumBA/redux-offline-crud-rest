@@ -76,7 +76,6 @@ function reducer(basePath, options = {}) {
 
       case actionTypes.read:
         console.info(actionTypes.read)
-
         return state
 
       case actionTypes.read_commit:
@@ -95,6 +94,32 @@ function reducer(basePath, options = {}) {
 
         return state
 
+      // Read w/ pagination
+      
+      case actionTypes.read_pagination:
+        return state
+
+      case actionTypes.read_pagination_commit:
+        // Collection
+        if (Array.isArray(payload)) {
+          if (!meta.skipParam) {
+            result = [...payload]
+          } else {
+            result = [...state, ...payload]
+          }
+        }
+        // Non-existing resource
+        else if (index === -1) result.push({ ...payload })
+
+        // Existing resource
+        else result[index] = { ...payload }
+
+        break
+
+      case actionTypes.read_pagination_rollback:
+        onRollback(payload)
+
+        return state
 
       // Update & Patch
 

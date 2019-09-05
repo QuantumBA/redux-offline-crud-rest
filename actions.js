@@ -118,16 +118,29 @@ function actions(basePath, options = {}) {
       }
     },
 
-    read(id, ownId = undefined, prefix, skip) {
-      console.log('baseUrl', baseUrl)
-      console.log('basePath', basePath)
-      console.log('prefix', prefix)
-      console.log('skip', skip)
-      console.log('id', id)
-      console.log('ownId', ownId)
+    read(id, ownId = undefined, prefix) {
       if (prefix) prefix = trim(prefix, '/')
       return {
         type: actionTypes.read,
+        meta: {
+          id: ownId || id,
+          offline: {
+            effect: {
+              url: composeUrl(baseUrl, prefix, basePath, id),
+              method: 'GET',
+              headers,
+            },
+            commit: { type: actionTypes.read_commit, meta: { id: ownId || id } },
+            rollback: { type: actionTypes.read_rollback, meta: { id: ownId || id } },
+          },
+        },
+      }
+    },
+    
+    readPagination(id, ownId = undefined, prefix, skip) {
+      if (prefix) prefix = trim(prefix, '/')
+      return {
+        type: actionTypes.read_pagination,
         meta: {
           id: ownId || id,
           offline: {
@@ -136,8 +149,8 @@ function actions(basePath, options = {}) {
               method: 'GET',
               headers,
             },
-            commit: { type: actionTypes.read_commit, meta: { id: ownId || id } },
-            rollback: { type: actionTypes.read_rollback, meta: { id: ownId || id } },
+            commit: { type: actionTypes.read_pagination_commit, meta: { id: ownId || id, skipParam: skip } },
+            rollback: { type: actionTypes.read_pagination_rollback, meta: { id: ownId || id } },
           },
         },
       }

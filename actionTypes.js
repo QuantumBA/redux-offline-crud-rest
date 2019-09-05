@@ -1,6 +1,7 @@
 function genActionTypes(baseType) {
   const actionType_create = `${baseType}#create`
   const actionType_read = `${baseType}#read`
+  const actionType_readPagination = `${baseType}#read-pagination`
   const actionType_update = `${baseType}#update`
   const actionType_patch = `${baseType}#patch`
   const actionType_delete = `${baseType}#delete`
@@ -13,6 +14,10 @@ function genActionTypes(baseType) {
     read: actionType_read,
     read_commit: `${actionType_read}_commit`,
     read_rollback: `${actionType_read}_rollback`,
+
+    read_pagination: actionType_readPagination,
+    read_pagination_commit: `${actionType_readPagination}_commit`,
+    read_pagination_rollback: `${actionType_readPagination}_rollback`,
 
     update: actionType_update,
     update_commit: `${actionType_update}_commit`,
